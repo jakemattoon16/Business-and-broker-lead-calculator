@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Business Sale Calculator | Lane6</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #000000;
+      --card: #111111;
+      --card2: #161616;
+      --accent: #00D4C8;
+      --accent-dim: rgba(0,212,200,0.1);
+      --text: #FFFFFF;
+      --muted: #888888;
+      --border: #1e1e1e;
+      --red: #FF5A5A;
+      --red-dim: rgba(255,90,90,0.1);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    header {
+      display: flex;
+      align-items: center;
+      padding: 18px 40px;
+      background: #080808;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    header img { height: 36px; }
+    .header-title {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      white-space: nowrap;
+    }
+
+    /* ── Layout ── */
+    .page {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 52px 28px 80px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      align-items: start;
+    }
+
+    /* ── Inputs Panel ── */
+    .inputs-panel {
+      background: var(--card);
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      padding: 36px 32px;
+    }
+    .panel-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 28px;
+    }
+    .field {
+      margin-bottom: 28px;
+    }
+    .field:last-child { margin-bottom: 0; }
+    .field-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 10px;
+    }
+    .field-label span:first-child {
+      font-size: 0.88rem;
+      font-weight: 500;
+      color: #ccc;
+    }
+    .field-value {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: var(--accent);
+      min-width: 80px;
+      text-align: right;
+    }
+
+    /* Number inputs */
+    .num-input-wrap {
+      position: relative;
+    }
+    .num-prefix {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--muted);
+      pointer-events: none;
+    }
+    input[type="number"] {
+      width: 100%;
+      background: #1a1a1a;
+      border: 2px solid #2a2a2a;
+      border-radius: 10px;
+      padding: 13px 16px 13px 28px;
+      font-size: 0.97rem;
+      font-family: inherit;
+      font-weight: 500;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.18s;
+      -moz-appearance: textfield;
+    }
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
+    input[type="number"]:focus { border-color: var(--accent); }
+
+    /* Sliders */
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 5px;
+      border-radius: 100px;
+      background: #2a2a2a;
+      outline: none;
+      cursor: pointer;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer;
+      box-shadow: 0 0 0 4px rgba(0,212,200,0.15);
+      transition: box-shadow 0.18s;
+    }
+    input[type="range"]::-webkit-slider-thumb:hover {
+      box-shadow: 0 0 0 6px rgba(0,212,200,0.22);
+    }
+    input[type="range"]::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--accent);
+      border: none;
+      cursor: pointer;
+    }
+
+    /* ── Results Panel ── */
+    .results-panel {
+      position: sticky;
+      top: 96px;
+    }
+    .results-card {
+      background: var(--card);
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      padding: 36px 32px;
+      margin-bottom: 16px;
+    }
+
+    .valuation-hero {
+      text-align: center;
+      padding: 24px 0 28px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 28px;
+    }
+    .valuation-label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    .valuation-amount {
+      font-size: 2.8rem;
+      font-weight: 800;
+      color: var(--accent);
+      line-height: 1;
+      letter-spacing: -0.02em;
+      transition: all 0.25s ease;
+    }
+    .valuation-sub {
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
+    .breakdown { display: flex; flex-direction: column; gap: 0; }
+    .line-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 0;
+      border-bottom: 1px solid #1a1a1a;
+      gap: 12px;
+    }
+    .line-item:last-child { border-bottom: none; }
+    .line-name {
+      font-size: 0.88rem;
+      color: #aaa;
+      flex: 1;
+    }
+    .line-amount {
+      font-size: 0.97rem;
+      font-weight: 600;
+      text-align: right;
+      transition: color 0.2s;
+      font-variant-numeric: tabular-nums;
+    }
+    .line-amount.positive { color: var(--accent); }
+    .line-amount.deduct   { color: var(--red); }
+    .line-amount.neutral  { color: var(--muted); }
+
+    .net-row {
+      margin-top: 16px;
+      padding: 20px 22px;
+      background: #0d0d0d;
+      border-radius: 12px;
+      border: 1px solid #2a2a2a;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .net-label {
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+    .net-amount {
+      font-size: 1.55rem;
+      font-weight: 800;
+      color: var(--text);
+      font-variant-numeric: tabular-nums;
+      transition: color 0.3s;
+    }
+    .net-amount.negative { color: var(--red); }
+
+    .ebitda-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--accent-dim);
+      border: 1px solid rgba(0,212,200,0.2);
+      border-radius: 100px;
+      padding: 5px 14px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 24px;
+    }
+    .ebitda-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+
+    .cta-card {
+      background: linear-gradient(135deg, rgba(0,212,200,0.08) 0%, rgba(0,212,200,0.02) 100%);
+      border-radius: 20px;
+      border: 1px solid rgba(0,212,200,0.2);
+      padding: 32px;
+      text-align: center;
+    }
+    .cta-card p {
+      font-size: 0.92rem;
+      color: #aaa;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+    .cta-btn {
+      display: inline-block;
+      background: var(--accent);
+      color: #000;
+      font-family: inherit;
+      font-weight: 700;
+      font-size: 0.97rem;
+      padding: 15px 36px;
+      border-radius: 10px;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      letter-spacing: 0.02em;
+      transition: background 0.18s, transform 0.18s, box-shadow 0.18s;
+    }
+    .cta-btn:hover {
+      background: #00bfb4;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(0,212,200,0.28);
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 4px 0 8px;
+    }
+    .divider-line { flex: 1; height: 1px; background: var(--border); }
+    .divider-text { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+
+    @media (max-width: 840px) {
+      .page { grid-template-columns: 1fr; }
+      .results-panel { position: static; }
+      header { padding: 16px 20px; }
+      .header-title { display: none; }
+    }
+    @media (max-width: 500px) {
+      .page { padding: 32px 16px 60px; }
+      .inputs-panel, .results-card { padding: 28px 20px; }
+      .valuation-amount { font-size: 2.2rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <img src="lane6logo.png" alt="Lane6">
+  <span class="header-title">What Will You Actually Keep After Selling?</span>
+</header>
+
+<div class="page">
+  <!-- ── Inputs ── -->
+  <div class="inputs-panel">
+    <div class="panel-title">Your Business Details</div>
+
+    <div class="field">
+      <div class="field-label">
+        <span>Annual Revenue</span>
+      </div>
+      <div class="num-input-wrap">
+        <span class="num-prefix">$</span>
+        <input type="number" id="revenue" value="2000000" min="0" step="50000" oninput="calc()">
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="field-label">
+        <span>EBITDA Margin</span>
+        <span class="field-value" id="ebitdaMarginVal">20%</span>
+      </div>
+      <input type="range" id="ebitdaMargin" min="5" max="40" value="20" oninput="calc()">
+    </div>
+
+    <div class="field">
+      <div class="field-label">
+        <span>Expected Sale Multiple</span>
+        <span class="field-value" id="multipleVal">3x</span>
+      </div>
+      <input type="range" id="multiple" min="1" max="6" step="0.5" value="3" oninput="calc()">
+    </div>
+
+    <div class="divider">
+      <div class="divider-line"></div>
+      <div class="divider-text">Deductions</div>
+      <div class="divider-line"></div>
+    </div>
+
+    <div class="field">
+      <div class="field-label">
+        <span>Capital Gains Tax Rate</span>
+        <span class="field-value" id="taxRateVal">20%</span>
+      </div>
+      <input type="range" id="taxRate" min="15" max="37" value="20" oninput="calc()">
+    </div>
+
+    <div class="field">
+      <div class="field-label">
+        <span>Outstanding Business Debt</span>
+      </div>
+      <div class="num-input-wrap">
+        <span class="num-prefix">$</span>
+        <input type="number" id="debt" value="150000" min="0" step="10000" oninput="calc()">
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="field-label">
+        <span>Broker Commission</span>
+        <span class="field-value" id="brokerVal">5%</span>
+      </div>
+      <input type="range" id="brokerPct" min="0" max="10" step="0.5" value="5" oninput="calc()">
+    </div>
+  </div>
+
+  <!-- ── Results ── -->
+  <div class="results-panel">
+    <div class="results-card">
+      <div class="panel-title">Your Estimated Outcome</div>
+
+      <div class="ebitda-pill">
+        <div class="ebitda-dot"></div>
+        EBITDA: <span id="ebitdaDisplay">$400,000</span>
+      </div>
+
+      <div class="valuation-hero">
+        <div class="valuation-label">Estimated Business Valuation</div>
+        <div class="valuation-amount" id="valuationDisplay">$1,200,000</div>
+        <div class="valuation-sub">Based on your EBITDA × multiple</div>
+      </div>
+
+      <div class="breakdown">
+        <div class="line-item">
+          <span class="line-name">Gross Sale Proceeds</span>
+          <span class="line-amount positive" id="grossDisplay">$1,200,000</span>
+        </div>
+        <div class="line-item">
+          <span class="line-name">Minus Broker Fee</span>
+          <span class="line-amount deduct" id="brokerFeeDisplay">−$60,000</span>
+        </div>
+        <div class="line-item">
+          <span class="line-name">Minus Debt Payoff</span>
+          <span class="line-amount deduct" id="debtDisplay">−$150,000</span>
+        </div>
+        <div class="line-item">
+          <span class="line-name">Minus Estimated Taxes</span>
+          <span class="line-amount deduct" id="taxDisplay">−$198,000</span>
+        </div>
+      </div>
+
+      <div class="net-row">
+        <span class="net-label">Net Cash to Owner</span>
+        <span class="net-amount" id="netDisplay">$792,000</span>
+      </div>
+    </div>
+
+    <div class="cta-card">
+      <p>These numbers are estimates. A Corelytics advisor can help you build a real exit plan — one that maximizes what you keep.</p>
+      <a class="cta-btn" href="#">Book a Free Strategy Call</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  function fmt(n) {
+    if (n < 0) return '−$' + Math.abs(Math.round(n)).toLocaleString();
+    return '$' + Math.round(n).toLocaleString();
+  }
+  function fmtDeduct(n) {
+    return '−$' + Math.round(Math.abs(n)).toLocaleString();
+  }
+
+  function calc() {
+    const revenue    = parseFloat(document.getElementById('revenue').value)    || 0;
+    const margin     = parseFloat(document.getElementById('ebitdaMargin').value);
+    const multiple   = parseFloat(document.getElementById('multiple').value);
+    const taxRate    = parseFloat(document.getElementById('taxRate').value);
+    const debt       = parseFloat(document.getElementById('debt').value)       || 0;
+    const brokerPct  = parseFloat(document.getElementById('brokerPct').value);
+
+    // Update slider displays
+    document.getElementById('ebitdaMarginVal').textContent = margin + '%';
+    document.getElementById('multipleVal').textContent     = multiple + 'x';
+    document.getElementById('taxRateVal').textContent      = taxRate + '%';
+    document.getElementById('brokerVal').textContent       = brokerPct + '%';
+
+    // Calculations
+    const ebitda     = revenue * (margin / 100);
+    const valuation  = ebitda * multiple;
+    const brokerFee  = valuation * (brokerPct / 100);
+    const afterBroker = valuation - brokerFee;
+    const afterDebt  = afterBroker - debt;
+    const taxes      = Math.max(afterDebt, 0) * (taxRate / 100);
+    const net        = afterDebt - taxes;
+
+    // Update DOM
+    document.getElementById('ebitdaDisplay').textContent  = fmt(ebitda);
+    document.getElementById('valuationDisplay').textContent = fmt(valuation);
+    document.getElementById('grossDisplay').textContent   = fmt(valuation);
+    document.getElementById('brokerFeeDisplay').textContent = fmtDeduct(brokerFee);
+    document.getElementById('debtDisplay').textContent    = fmtDeduct(debt);
+    document.getElementById('taxDisplay').textContent     = fmtDeduct(taxes);
+
+    const netEl = document.getElementById('netDisplay');
+    netEl.textContent = net < 0 ? '−$' + Math.abs(Math.round(net)).toLocaleString() : fmt(net);
+    netEl.classList.toggle('negative', net < 0);
+  }
+
+  calc();
+</script>
+</body>
+</html>
